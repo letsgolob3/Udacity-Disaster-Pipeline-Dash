@@ -1,5 +1,5 @@
 import sys
-
+from sklearn.model_selection import test_train_split
 
 def load_data(database_filepath):
     pass
@@ -20,6 +20,9 @@ def evaluate_model(model, X_test, Y_test, category_names):
 def save_model(model, model_filepath):
     pass
 
+# def load_model(model_filepath)
+#   model=joblib.method?(model_filepath) 
+#   return model
 
 def main():
     if len(sys.argv) == 3:

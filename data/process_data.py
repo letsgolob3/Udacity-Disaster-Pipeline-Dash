@@ -1,15 +1,80 @@
 import sys
-
+import pandas as pd
+from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    '''
+    INPUT
+    messages_filepath - string for location of messages data
+    categories_filepath - string for location of categories data
+    
+    OUTPUT
+    df - merged dataframe of messages and categories
+    '''
+    
+    messages = pd.read_csv(f'{messages_filepath}\messages.csv')
+    
+    categories = pd.read_csv(f'{categories_filepath}\categories.csv')
+    
+    # Merging categories and messages into single dataframe
+    df = pd.merge(categories,messages,on='id',how='inner')    
+    
+    return df
 
 
 def clean_data(df):
-    pass
+    '''
+    INPUT
+    df - dataframe of messages with categories. Output from load_data
+    
+    OUTPUT
+    df - cleaned dataframe of messages and categories
+    '''
+    
+    # Splitting categories column into multiple columns by the ;
+    categories = df['categories'].str.split(';',expand=True)
+    
+    # Rename the categories columns 
+    row = categories.iloc[0,:]
+    category_colnames = row.str.split('-').str[0]
+    
+    categories.columns = category_colnames
+    
+
+    # Convert values in each category column to binary 1/0
+    for column in categories:
+
+        categories[column] = categories[column].astype(str)
+        categories[column] = categories[column].str[-1]
+    
+    categories[column] = pd.to_numeric(categories[column],downcast='integer')
+    
+    # Remove categories column from df
+    df.drop(columns=['categories'],inplace=True)
+
+    # Concatenate original df with expanded categories
+    df = pd.concat([df,categories],axis=1)
+    
+    # Remove duplicates
+    df.drop_duplicates(inplace=True)    
+    
+    return df
 
 
 def save_data(df, database_filename):
+    '''
+    INPUT
+    df - cleaned dataframe of messages and categories. Output from clean_data
+    
+    OUTPUT
+    None - function does not return output but the tablename is saved locally
+    '''
+
+    
+    engine = create_engine(f'sqlite:///{database_filename}.db')
+    
+    df.to_sql('InsertTableName', engine, index=False)
+    
     pass  
 
 
