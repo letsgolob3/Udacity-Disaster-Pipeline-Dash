@@ -1,13 +1,36 @@
 import sys
-from sklearn.model_selection import test_train_split
+import re
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from sklearn.model_selection import train_test_split
+from nltk.stem.wordnet import WordNetLemmatizer
 
 def load_data(database_filepath):
     pass
 
 
 def tokenize(text):
-    pass
+    '''
+    INPUT
+    text - a string of text
+    
+    OUTPUT
+    text - a string of text that has been processed
+    '''
+    
+    
+    # lower case and remove punctuation
+    text = re.sub(r'[^a-zA-Z0-9]'," ",text.lower())
+    
+    # tokenize text to words
+    tokens = word_tokenize(text)
+    
+    # lemmatize and remove stop words
+    tokens = [WordNetLemmatizer().lemmatize(w) for w in tokens]
+    
+    tokens= [ w for w in tokens if w not in stopwords.words("english")]
 
+    return tokens
 
 def build_model():
     pass
