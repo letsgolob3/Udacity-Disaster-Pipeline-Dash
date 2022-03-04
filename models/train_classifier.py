@@ -27,12 +27,14 @@ def load_data(database_filepath):
     category_names - message category names
     '''    
     
-    #TK
-    engine = create_engine('sqlite:///InsertDatabaseName.db')
-    df = pd.read_sql_table('DS_message',engine)
+    engine = create_engine('sqlite:///{database_filepath}')
+    
+    print(engine.table_names())
+    
+    df = pd.read_sql_table('Disaster_Resp',engine)
     
     X = df['message']
-    Y = df[df.columns[5:]]
+    Y = df[df.columns[4:]]
     category_names = Y.columns.tolist()
     
     return X, Y, category_names

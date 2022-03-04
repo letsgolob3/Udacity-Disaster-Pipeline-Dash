@@ -14,7 +14,7 @@
 	- re
 
 # Project Motivation
-- This goal of this project is to read in messages data, apply text processing, and classify the categories of the messages for the Udacity Data Science Nanodegree program's second project.  The dataset was provided by FigureEight
+This goal of this project is to read in messages data, apply text processing, and classify the categories of the messages for the Udacity Data Science Nanodegree program's second project.  The dataset was provided by FigureEight.
 
 
 # File descriptions

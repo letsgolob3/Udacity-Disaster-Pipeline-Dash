@@ -12,9 +12,9 @@ def load_data(messages_filepath, categories_filepath):
     df - merged dataframe of messages and categories
     '''
     
-    messages = pd.read_csv(f'{messages_filepath}\messages.csv')
+    messages = pd.read_csv(f'{messages_filepath}')
     
-    categories = pd.read_csv(f'{categories_filepath}\categories.csv')
+    categories = pd.read_csv(f'{categories_filepath}')
     
     # Merging categories and messages into single dataframe
     df = pd.merge(categories,messages,on='id',how='inner')    
@@ -69,11 +69,10 @@ def save_data(df, database_filename):
     OUTPUT
     None - function does not return output but the tablename is saved locally
     '''
-
     
-    engine = create_engine(f'sqlite:///{database_filename}.db')
+    engine = create_engine(f'sqlite:///{database_filename}')
     
-    df.to_sql('InsertTableName', engine, index=False,if_exists='replace')
+    df.to_sql('Disaster_Resp', engine, index=False, if_exists='replace')
     
     pass  
 
