@@ -59,3 +59,4 @@ The .py files within the repository were designed for others to replicate the an
 # Licensing, Authors, Acknowledgements
 Thank you to FigureEight for making the data accessible.  Thank you to Udacity for providing templates of the folder and file structure needed for this project.  The linked stack
  overflow [thread](https://stackoverflow.com/questions/43532811/gridsearch-over-multioutputregressor) helped to determine the syntax to access the grid search parameters within a MultiOutputClassifier.  
+Finally, thank you to the Udacity help forum; using that, I was able to troubleshoot several issues (filepath, host IP).   
