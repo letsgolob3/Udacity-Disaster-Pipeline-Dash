@@ -46,8 +46,13 @@ def clean_data(df):
 
         categories[column] = categories[column].astype(str)
         categories[column] = categories[column].str[-1]
+        categories[column] = pd.to_numeric(categories[column],downcast='integer')
+        
+    # EDA demonstrated that the related column had 3 values (0, 1 and 2)
+    # Remove records with a 2
+    categories=categories.loc[categories['related']<2].copy()
     
-    categories[column] = pd.to_numeric(categories[column],downcast='integer')
+
     
     # Remove categories column from df
     df.drop(columns=['categories'],inplace=True)
@@ -57,6 +62,14 @@ def clean_data(df):
     
     # Remove duplicates
     df.drop_duplicates(inplace=True)    
+    
+    # Drop the original column and then drop messages that have null categories 
+    # as a pre-processing step for the machine learning model
+    df.drop(columns=['original'],inplace=True)
+    df.dropna(how='any',inplace=True) 
+    
+    print(df.info())
+    print(df.isna().any())
     
     return df
 

@@ -14,6 +14,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
 
 def load_data(database_filepath):
     
@@ -27,15 +28,20 @@ def load_data(database_filepath):
     category_names - message category names
     '''    
     
-    engine = create_engine('sqlite:///{database_filepath}')
-    
-    print(engine.table_names())
+    engine = create_engine(f'sqlite:///{database_filepath}')
     
     df = pd.read_sql_table('Disaster_Resp',engine)
+ 
+    # Sample size for testing
+#    df=df.head(200).copy()
     
     X = df['message']
-    Y = df[df.columns[4:]]
-    category_names = Y.columns.tolist()
+    Y = df[df.columns[3:]].copy()
+    category_names = list(Y.columns)
+    
+    # Ensuring the loaded data is the same as the saved data from process_data.py
+    # print(Y.info())
+    # print(Y.isna().any())
     
     return X, Y, category_names
 
@@ -53,7 +59,6 @@ def tokenize(text):
         4) Lemmatize
         5) Remove stop words
     '''
-    
     
     # lower case and remove punctuation
     text = re.sub(r'[^a-zA-Z0-9]'," ",text.lower())
@@ -86,13 +91,12 @@ def build_model():
     
     # Parameters for chosen classifier
     parameters = {
-        'rf__n_estimators': [100, 200],
-        'rf__max_features': ['auto', 'sqrt', 0.33],
-        'rf__min_samples_leaf': [1, 3, 5, 10],
+        'rf__estimator__n_estimators': [10, 30],
+        'rf__estimator__max_depth': [5, 8],
         }
 
     # Instantiate GridSearchCV object based on RF parameters
-    cv = GridSearchCV(pipeline,param_grid=parameters)    
+    cv = GridSearchCV(pipeline,param_grid=parameters,verbose=1,cv=3)    
     
     return cv
 
@@ -111,10 +115,17 @@ def evaluate_model(model, X_test, Y_test, category_names):
     '''        
 
     y_pred=model.predict(X_test)
+    
 
     # Print out model performance metrics of categories
     print(classification_report(Y_test, y_pred,
-                                labels=category_names))
+                                target_names=category_names))
+    
+    
+    for i,col in enumerate(Y_test):
+        
+        label=category_names[i]
+        print(f'Acurracy of {label}: ',accuracy_score(Y_test[col],y_pred[:,i]))
     
     pass
 
@@ -129,7 +140,7 @@ def save_model(model, model_filepath):
     None 
     '''    
     
-    with open(f'{model_filepath}\filename_you_choose_name.pkl','wb') as f:
+    with open(f'{model_filepath}','wb') as f:
         pickle.dump(model,f)
     
     pass
@@ -141,22 +152,25 @@ def save_model(model, model_filepath):
 def main():
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
+    # database_filepath=r'C:\Users\E082499\Documents\Udacity Data Scientist Nanodegree\Project 2 Disaster Pipeline\disaster_response_pipeline_project\data/DisasterResponse.db'
+    # model_filepath='models/classifier.pkl'
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
-        
+    
+
         print('Training model...')
         model.fit(X_train, Y_train)
         
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
-
+    
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath)
-
+    
         print('Trained model saved!')
 
     else:
