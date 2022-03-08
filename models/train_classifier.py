@@ -2,6 +2,8 @@ import sys
 import re
 import pandas as pd
 import pickle
+import nltk
+
 from sqlalchemy import create_engine
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -16,7 +18,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score
 
-import nltk
+
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
@@ -150,8 +152,7 @@ def save_model(model, model_filepath):
 def main():
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
-    # database_filepath=r'C:\Users\E082499\Documents\Udacity Data Scientist Nanodegree\Project 2 Disaster Pipeline\disaster_response_pipeline_project\data/DisasterResponse.db'
-    # model_filepath='models/classifier.pkl'
+
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
