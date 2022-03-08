@@ -44,6 +44,13 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    # Display counts of each category
+    frequency=df[df.columns[3:]].copy()
+
+    freqS=pd.DataFrame(frequency.sum(axis=0),columns=['Message Counts']).reset_index().\
+                   rename(columns={'index':'Category'}).sort_values('Message Counts',
+                                                                    ascending=False)
+    
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -65,7 +72,29 @@ def index():
                 }
             }
         },
+        
+        {
+            'data': [
+                Bar(
+                    x=freqS['Category'],
+                    y=freqS['Message Counts']
+                )
+            ],
+
+            'layout': {
+                'title': 'Frequency of Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category"
+                }
+            }
+        }
+        
     ]
+
+
     
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
@@ -94,7 +123,7 @@ def go():
 
 
 def main():
-    app.run(host='0.0.0.0', port=3001, debug=False)
+    app.run(host='127.0.0.1', port=3001, debug=False)
 
 
 if __name__ == '__main__':

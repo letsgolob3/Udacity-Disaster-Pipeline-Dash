@@ -68,9 +68,6 @@ def clean_data(df):
     df.drop(columns=['original'],inplace=True)
     df.dropna(how='any',inplace=True) 
     
-    print(df.info())
-    print(df.isna().any())
-    
     return df
 
 
