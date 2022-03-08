@@ -49,7 +49,7 @@ The .py files within the repository were designed for others to replicate the an
 2. Run the following command in the app's directory to run your web app.
     `python run.py`
 
-3. Go to http://0.0.0.0:3001/
+3. Go to http://127.0.0.1:3001/
 
 ## Data preparation summary.  
 - Messages were joined with the categories data to obtain associated categories for each disaster message 
@@ -59,4 +59,4 @@ The .py files within the repository were designed for others to replicate the an
 # Licensing, Authors, Acknowledgements
 Thank you to FigureEight for making the data accessible.  Thank you to Udacity for providing templates of the folder and file structure needed for this project.  The linked stack
  overflow [thread](https://stackoverflow.com/questions/43532811/gridsearch-over-multioutputregressor) helped to determine the syntax to access the grid search parameters within a MultiOutputClassifier.  
-Finally, thank you to the Udacity help forum; using that, I was able to troubleshoot several issues (filepath, host IP).   
+Finally, thank you to the Udacity help forum; using that, I was able to troubleshoot several issues (filepath, host IP, training time).   

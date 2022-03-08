@@ -8,13 +8,19 @@ from nltk.corpus import stopwords
 from sklearn.model_selection import train_test_split
 from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score
+
+import nltk
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('stopwords')
+
 
 def load_data(database_filepath):
     
@@ -31,17 +37,11 @@ def load_data(database_filepath):
     engine = create_engine(f'sqlite:///{database_filepath}')
     
     df = pd.read_sql_table('Disaster_Resp',engine)
- 
-    # Sample size for testing
-#    df=df.head(200).copy()
-    
+     
     X = df['message']
     Y = df[df.columns[3:]].copy()
     category_names = list(Y.columns)
     
-    # Ensuring the loaded data is the same as the saved data from process_data.py
-    # print(Y.info())
-    # print(Y.isna().any())
     
     return X, Y, category_names
 
@@ -86,17 +86,18 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('rf', MultiOutputClassifier(RandomForestClassifier()))
+        ('adb', MultiOutputClassifier(AdaBoostClassifier()))
     ])
     
     # Parameters for chosen classifier
     parameters = {
-        'rf__estimator__n_estimators': [10, 30],
-        'rf__estimator__max_depth': [5, 8],
+        'vect__max_df': (0.5, 1.0),
+        'tfidf__use_idf': (True, False),
+        'adb__estimator__n_estimators': [50, 100],
         }
 
     # Instantiate GridSearchCV object based on RF parameters
-    cv = GridSearchCV(pipeline,param_grid=parameters,verbose=1,cv=3)    
+    cv = GridSearchCV(pipeline,param_grid=parameters,verbose=2,cv=2)    
     
     return cv
 
@@ -145,9 +146,6 @@ def save_model(model, model_filepath):
     
     pass
 
-# def load_model(model_filepath)
-#   model=joblib.method?(model_filepath) 
-#   return model
 
 def main():
     if len(sys.argv) == 3:
